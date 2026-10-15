@@ -18,3 +18,20 @@
 - `createdAt` is UTC, so convert to the shop timezone before bucketing days.
 - All POS payments were `shopify_payments` (card). Cash shows only if it's rung in POS.
 Note: the connector validates every query against Shopify's pinned schema before running it, and all the queries above passed. `validate_graphql_codeblocks` is a no-op.
+
+# Square sandbox results (2026-10-14, connect.squareupsandbox.com, REST equivalents of the MCP methods)
+
+Seeded: 4 items / 5 variations (Spruce Sentry 1 oz $12 & 2 oz $20, Aches & Pains $25, Acne Soap $9, Labrador Tea $10), counts 20/10/15/12/6, 5 orders paid with `cnon:card-nonce-ok`.
+
+| Skill | Result |
+|---|---|
+| locations.list | PASS: 1 location (Default Test Account, timezone UTC) |
+| market-day-sales | PASS: orders.search COMPLETED → 5 orders, $223.00, 14 units, correct per-variation counts |
+| pack-list | PASS: inventory.batchGetcounts returned on-hand 17/8/11/9/4 |
+| sold-through | PASS: packed − sold = on-hand for all 5 variations (15–33%) |
+| restock | PASS: no restock flagged at this stock level (math verified) |
+| event-profit | PASS with caveat: payments.list returned 5 payments but no `processing_fee` in sandbox → $223 − $0 − $40 booth = $183 (fees must be estimated) |
+| catalog.searchObjects | PASS: 4 items |
+| event-log | PASS (spec, no Square calls) |
+
+Fixes: pack-list still named `BatchRetrieveInventoryCounts` → `batchGetcounts`; removed `get-inventory-levels` from tool lists; market-day-sales now specifies `state_filter` and location-timezone day window; event-profit handles missing `processing_fee`.
