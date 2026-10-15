@@ -35,3 +35,18 @@ Seeded: 4 items / 5 variations (Spruce Sentry 1 oz $12 & 2 oz $20, Aches & Pains
 | event-log | PASS (spec, no Square calls) |
 
 Fixes: pack-list still named `BatchRetrieveInventoryCounts` → `batchGetcounts`; removed `get-inventory-levels` from tool lists; market-day-sales now specifies `state_filter` and location-timezone day window; event-profit handles missing `processing_fee`.
+
+# In-app test (Shopify connector)
+2026-10-14, Grok Bot app, real Midnight Sun Mercantile store via the official Shopify connector (`get-shop-info`, `graphql_query` only; no writes). Shop timezone AKDT.
+
+| Skill | Result |
+|---|---|
+| market-day-sales 2026-09-19 | PASS: 23 POS orders, 0 cancelled, net $975.00, discounts $20.00, refunds $0, fees $27.67, all `shopify_payments` (no cash rung), 1 location, sales 11:57–17:17 AKDT. Top: Aches & Pains Salve 13, Spruce Sentry 8, Boreal Vitality tea 8. |
+| market-day-sales, most recent | Only POS order after 9/19 is one $60 order on 2026-10-05 (evening, not a market). Most recent market days before that: 9/12 (32 orders, $937; earlier table's 26/$730 did not use the full local day) and 9/5 (13, $397). |
+| pack-list | PASS: last 3 market days (9/5, 9/12, 9/19), +25%. Flags pack > on hand: Boreal Vitality tea (both sizes, 0 on hand), Bug Bite .5 oz (0), Spruce Shield Foot Oil (0). Items with no active variant: Bog & Bush Bug Repellent (renamed Bug Balm), Arctic Apple festival soap (renamed), Cup of Tea, Pumpkin Seeds. |
+| sold-through | PASS: no packed/left counts given, so it asks; POS-sold side comes from market-day-sales. |
+| restock | PASS: math runs; batch sizes and upcoming-event count are asked for, not guessed. |
+| event-profit 9/19 | PASS: 975 − 27.67 fees − 40 booth = $907.33. COGS partial $215.69 (10 sold variants have null unitCost, listed and asked). Fees were present, so the ask-for-rate fallback was not needed. Profit/hour needs booth hours. |
+| event-log | PASS: sample `test-out/events.csv` written with only the given fields. |
+
+Fixes: join sales to stock on `variant{id}` (renamed products broke title matching); the tool has its own `first`/`after` args (default 10); UTC day window; paginate productVariants; null `unitCost` handling; profit/hour uses booth hours, not sale times.

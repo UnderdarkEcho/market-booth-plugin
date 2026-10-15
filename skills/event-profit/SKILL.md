@@ -5,7 +5,7 @@ description: Use to work out whether a market was worth it, as net sales minus b
 # Event profit
 - Net sales from market-day-sales. Card processing fees: Shopify `transactions{gateway fees{amount{amount}}}` where available, Square `make_api_request` service `payments` method `list` (`processing_fee`; it can be missing or arrive late, so if it is absent ask for the rate and label fees as estimated).
 - Costs from event-log: booth fee, travel, other. Optional COGS = units × unit cost (Shopify `inventoryItem{unitCost}`, or ask).
-- Profit = net − processing fees − booth fee − other costs − COGS. Also show profit per hour at the booth.
+- Profit = net − processing fees − booth fee − other costs − COGS. Also show profit per hour at the booth, using booth hours from event-log (ask if missing; first/last sale times are not booth hours).
 - Compare: rank past events by profit and profit/hour. Only report numbers you have and label any estimates.
 ## Connectors (read-only)
 - Shopify (official connector): `graphql_query`, `list-orders`, `search_products`, `run-analytics-query`. Never call `graphql_mutation`, `set-inventory`, or `update-product`.

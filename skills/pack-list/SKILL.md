@@ -6,7 +6,7 @@ description: Use before a market, fair, or pop-up to decide what to bring. Build
 1. Get the upcoming event and the last N similar events (default 3) from event-log.
 2. For each past event, get units sold per SKU (see market-day-sales).
 3. Suggested pack = ceil(avg sold × (1 + buffer)), with a default buffer of 25% and a minimum of 1 for SKUs that have sold before.
-4. Show on-hand stock: Shopify `graphql_query` `productVariants(first:50, query:"product_status:active"){nodes{title sku product{title} inventoryQuantity inventoryItem{tracked unitCost{amount}}}}`; Square `make_api_request` service `inventory` method `batchGetcounts` (keep `state` IN_STOCK).
+4. Show on-hand stock: Shopify `graphql_query` `productVariants(first:50, query:"product_status:active"){pageInfo{hasNextPage endCursor} nodes{id title sku product{title} inventoryQuantity inventoryItem{tracked unitCost{amount}}}}`; Square `make_api_request` service `inventory` method `batchGetcounts` (keep `state` IN_STOCK). Join sales to stock on variant id. Items sold but missing from active variants (archived, renamed or one-off items) show on hand as "no record" and ask.
 5. Output a large-print table to tick off: item | on hand | pack | basis. Flag SKUs where pack > on hand.
 If there's no history, say so and ask for counts. Don't guess.
 ## Connectors (read-only)
