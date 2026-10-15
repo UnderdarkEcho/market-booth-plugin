@@ -1,23 +1,23 @@
-# DRAFT (not sent): Square developer support, redirect URI allowlist
+# Internal: add Grok Bot's OAuth redirect URI to our Square app
 
-**To:** Square Developer Support (https://developer.squareup.com/forums or the support form at https://squareup.com/help/contact, developer category)
-**Subject:** Allowlist request: Grok Bot OAuth redirect URI for the Square MCP server (mcp.squareup.com)
+Square app: **Market & Booth Test**, Application ID `sq0idp-frF18R28Wyj6I9QMosOWoA`
 
-Hi Square Developer team,
+## Redirect URI to add
+```
+https://www.cursor.com/agents/mcp/oauth/callback
+```
+Since 2026-09-07, Grok Bot's remote-MCP OAuth sends this HTTPS callback for app and cloud sign-ins (the old `grokbot://mcp/oauth/callback` scheme isn't used anymore). The desktop app can use a loopback callback instead: `http://localhost:8787/callback`.
+Source: Cursor forum staff answers, topics 171877 and 171111. We haven't seen this value in a Square error yet, so confirm it in step 6.
 
-We publish **Market & Booth**, an open-source, read-only plugin for market and pop-up sellers (https://github.com/UnderdarkEcho/market-booth-plugin). It connects to your hosted MCP server at `https://mcp.squareup.com/mcp`.
+## Steps
+1. Sign in at https://developer.squareup.com/apps with the account that owns the app.
+2. Open **Market & Booth Test** and check that the Application ID is `sq0idp-frF18R28Wyj6I9QMosOWoA`.
+3. In the left menu, open **OAuth**.
+4. Use the toggle at the top to pick the environment. Do **Sandbox** first, then repeat for **Production** when we're ready.
+5. Paste `https://www.cursor.com/agents/mcp/oauth/callback` into **Redirect URL** exactly as written: HTTPS, no trailing slash, no query string. Click **Save**.
+   - Square allows only one redirect URL per environment. If the field already holds a URL that something else depends on, stop and decide which one to keep before you overwrite it.
+6. Test it: in Grok Bot, connect Square through the plugin. On the Square authorize page, check that the `redirect_uri=` in the address bar decodes to the same URL. If it doesn't, paste that decoded value into step 5 instead.
+7. Approve, then ask "List my Square locations." Once Sandbox works, repeat steps 4–7 for Production.
 
-When users of the Grok Bot app connect Square, the OAuth step fails with **"Invalid redirect URI"**. The same tools work fine through the local `square-mcp-server` with a personal access token, so it seems Grok Bot's OAuth callback just isn't on the allowlist for the hosted MCP's OAuth client.
-
-Could you add this redirect URI to the allowlist?
-
-`<<REDIRECT_URI: copy the redirect_uri= value from the Square sign-in URL that shows the error>>`
-
-If there's a self-serve registration path for MCP clients, such as dynamic client registration or a partner form, we'd be glad to use it. Our plugin only calls read methods (locations, orders.search, inventory, catalog, payments.list).
-
-Thanks,
-Richard
-Midnight Sun Mercantile (@midnightsunmerc)
-
----
-_Note: the exact redirect URI wasn't in any saved error, log, or config. Before sending, start the Square connect in Grok Bot, copy the `redirect_uri` parameter from the authorize URL in the address bar (URL-decoded), and replace the placeholder._
+## Caveat
+This allowlist only applies to OAuth that uses **our** app's client ID. The plugin's `.mcp.json` currently points at Square's hosted server, `https://mcp.squareup.com/mcp`, which runs OAuth through Square's own client. If the authorize URL in step 6 shows a `client_id` other than `sq0idp-frF18R28Wyj6I9QMosOWoA`, our setting won't affect that flow. In that case, only Square can fix the hosted server's allowlist, and users fall back to the personal-token route in `skills/SQUARE-CONNECT.md`.

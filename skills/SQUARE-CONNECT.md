@@ -3,14 +3,20 @@
 ## Default: hosted Square MCP (OAuth)
 The plugin points at Square's official hosted MCP server, `https://mcp.squareup.com/mcp`, which signs you in with OAuth.
 
-**Known issue (beta):** in some apps, including Grok Bot, the Square sign-in page fails with **"Invalid redirect URI"**. The app's OAuth callback isn't on Square's allowlist yet. We've asked Square to add it. Until they do, use the fallback below.
+This is the **primary, recommended** way to connect:
+1. Connect Square from the plugin and click **Authenticate**.
+2. Sign in to Square and approve **read** access.
+3. Check it by asking "List my Square locations."
 
-## Fallback: your own Square access token (local stdio MCP)
+If the Square page says **"Invalid redirect URI"**, the app's OAuth callback isn't allowlisted yet. That's a setup issue on our side (maintainers: see `notes/square-redirect-request.md`), not something you did. Use the secondary fallback below only if OAuth isn't working for you.
+
+## Secondary fallback: your own Square access token (local stdio MCP)
+Use this only if OAuth won't connect.
 This runs Square's official open-source server (`square-mcp-server`) on your own machine with your own token. It works for Sandbox and Production.
 
 ### 1. Create the token in the Square Developer Dashboard
 1. Sign in at https://developer.squareup.com/apps with your Square account.
-2. Click **+ Create an application** (any name, e.g. "Market & Booth"), or open an existing one.
+2. Click **+ Create an application** (any name, e.g. "Example Booth App"), or open an existing one.
 3. Pick the environment at the top: **Sandbox** to test with fake data, **Production** for your real shop.
 4. Open **Credentials**.
    - Sandbox: copy the **Sandbox Access Token**.
