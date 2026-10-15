@@ -1,0 +1,11 @@
+{
+  "name": "market-booth",
+  "version": "0.1.0",
+  "description": "Market & Booth: pack lists, market-day sales, sold-through, restock, and event profit for makers who sell at markets and pop-ups. Skills-only; runs on the official Shopify and Square connectors. Read-only by default.",
+  "author": { "name": "Midnight Sun Mercantile" },
+  "logo": "./assets/logo.png",
+  "license": "MIT",
+  "keywords": ["shopify", "square", "pos", "farmers-market", "craft-fair", "pop-up", "inventory", "makers"],
+  "skills": "./skills/",
+  "mcpServers": "./.mcp.json"
+}
